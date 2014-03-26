@@ -2,8 +2,8 @@ function multitrain
 
 close all
 clear all
-N = 2;  %# of sims to run
-epochs = 200;
+N = 5;  %# of sims to run
+epochs = 100;
 F = cell(N,1);  %cell array containing all the trained forests
 for k = 1:N
    
