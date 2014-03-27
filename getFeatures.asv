@@ -1,4 +1,4 @@
-function [fvec flab] = getFeatures(pre_acc)
+function [fvec, flab] = getFeatures(pre_acc)
 
 
 % features for each of the three axis (axis is row, time is column)
@@ -10,6 +10,7 @@ flab = {};
 for i=1:size(S,1)
     % looking at separate timescales
     fvec = [fvec nanmean(S(i,:))]; flab = [flab; 'mean acc'];
+    
 %     S5 = conv(S(i,:),gausswin(5)/nansum(gausswin(5)));
 %     S10 = conv(S(i,:),gausswin(10)/nansum(gausswin(10)));
 %     fvec = [fvec sqrt(nanmean(S5(:).^2))]; flab = [flab; '5 smooth rms'];
@@ -20,7 +21,7 @@ for i=1:size(S,1)
 %     fvec = [fvec nanmin(S(i,:))];  flab = [flab; 'min'];
 %     fvec = [fvec abs(nanmax(S(i,:)))];  flab = [flab; 'abs max'];
 %     fvec = [fvec abs(nanmin(S(i,:)))];  flab = [flab; 'abs min'];
-%     
+%      
     % normalized histogram of the values
     histvec = histc((S(i,:)-nanmean(S(i,:))/nanstd(S(i,:))),[-3:1:3]);
     % remove the last data point (which is zero in almost all cases)
@@ -44,14 +45,14 @@ for i=1:size(S,1)
     end
     
     % fourier transform
-%     N = 16;
-%     Y = fft(S(i,:),N);
-%     Pyy = Y.* conj(Y) / N;
-%     Pyy = Pyy(1:N/2); %Bug Fixed (Luca & Sohrab)
-%     Pyy = Pyy/nansum(Pyy.^2);
-%     fvec = [fvec Pyy];
-%     flab = [flab; cellstr(repmat('fourier',N/2,1))];
-%     
+    N = 16;
+    Y = fft(S(i,:));
+    Pyy = Y.* conj(Y);
+    Pyy = Pyy(1:N); %Bug Fixed (Luca & Sohrab)
+    Pyy = Pyy/nansum(Pyy.^2);
+    fvec = [fvec Pyy];
+    flab = [flab; cellstr(repmat('fourier',N,1))];
+     
     % moments of the difference
     fvec = [fvec sqrt(nanmean(diff(S(i,:)).^2))]; flab = [flab; 'mean diff'];
     fvec = [fvec nanstd(diff(S(i,:)))]; flab = [flab; 'std diff'];

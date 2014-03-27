@@ -47,7 +47,7 @@ features = load('../Data/UCIHARDataset/train/X_train.txt');
 %Train RF
 disp('RF Train');
 
-ntrees = 400;
+ntrees = 2;
 OOBVarImp = 'off';   %enable variable importance measurement
 
 forest = TreeBagger(ntrees,features,codesTrue','OOBVarImp',OOBVarImp);
@@ -77,8 +77,6 @@ disp('RF Test');
 % accz = load ('../Data/UCIHARDataset/test/InertialSignals/total_acc_z_test.txt');  
 
 codesTrue = load('../Data/UCIHARDataset/test/y_test.txt');
-
-features = load('../Data/UCIHARDataset/test/X_test.txt');
 
 %extract features
 % features_acc = []; features_gyr = []; features = [];
