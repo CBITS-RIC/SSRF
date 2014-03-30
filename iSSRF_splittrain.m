@@ -5,7 +5,11 @@ ifrac = 0;
 Y = load('../Data/UCIHARDataset/train/y_train.txt');
 X = load('../Data/UCIHARDataset/train/X_train.txt');
 
-frac_range = exp(-4.6052:.5:-0.1054);
+frac_begin = log(.01);
+frac_end = log(.9);
+n_frac = 10;
+
+frac_range = exp(frac_begin:(frac_end-frac_begin)/(n_frac-1):frac_end);
 
 for frac = frac_range,
     
