@@ -1,5 +1,6 @@
 %Inductive Semi-Supervised RF
 %Splittrain: split train data into labeled and unlabeled
+%1 Subj: TO BE FINISHED!
 close all, clear all; clc
 ifrac = 0;
 Y = load('../Data/UCIHARDataset/train/y_train.txt');
@@ -8,8 +9,11 @@ X = load('../Data/UCIHARDataset/train/X_train.txt');
 % Y = load('../Data/ArtData/labels_art.mat'); Y = Y.labels;
 % X = load('../Data/ArtData/data_art.mat');   X = X.data;
 
-frac_begin = log(.001);
-frac_end = log(.1);
+subjects = load('../Data/UCIHARDataset/train/subject_train.txt');
+Ns_range = unique(subjects);
+
+frac_begin = log(.01);
+frac_end = log(.9);
 n_frac = 10;
 f = {};
 

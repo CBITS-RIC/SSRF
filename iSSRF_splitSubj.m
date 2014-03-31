@@ -1,28 +1,28 @@
 %Inductive Semi-Supervised RF
-%Splittrain: split train data into labeled and unlabeled
+%Subject-wise SS
+
 close all, clear all; clc
-ifrac = 0;
+c = 0;
 Y = load('../Data/UCIHARDataset/train/y_train.txt');
 X = load('../Data/UCIHARDataset/train/X_train.txt');
 
-% Y = load('../Data/ArtData/labels_art.mat'); Y = Y.labels;
-% X = load('../Data/ArtData/data_art.mat');   X = X.data;
-
-frac_begin = log(.001);
-frac_end = log(.1);
-n_frac = 10;
+subjects = load('../Data/UCIHARDataset/train/subject_train.txt');
+Ns_range = unique(subjects);
+Ns_range = Ns_range(1:end-5)';
+% frac_begin = log(.001);
+% frac_end = log(.1);
+% n_frac = 10;
 f = {};
 
-frac_range = exp(frac_begin:(frac_end-frac_begin)/(n_frac-1):frac_end);
+% frac_range = exp(frac_begin:(frac_end-frac_begin)/(n_frac-1):frac_end);
 
-for frac = frac_range,
+for Ns = Ns_range,
     
-    frac
+    Ns
+    c = c+1;
+    acc{c} = [];
     
-    ifrac = ifrac+1;
-    acc{ifrac} = [];
-    
-    clearvars -except frac ifrac f X Y acc;
+    clearvars -except c f X Y acc subjects Ns;
     
     
     
@@ -35,7 +35,8 @@ for frac = frac_range,
     % Xtest = X(~labeled,:);   Ytest = Y(~labeled);            %unlabeled data
     
     %sequentially select data
-    split = floor(size(X,1)*frac);
+    ind = find(subjects == Ns);
+    split = ind(end);
     Xtrain = X(1:split,:);   Ytrain = Y(1:split);          %labeled data
     Xtest = X(split+1:end,:);   Ytest = Y(split+1:end);            %unlabeled data
     
@@ -90,7 +91,7 @@ for frac = frac_range,
     matRF = confusionmat(Ytest,codesRF);
     accRF = length(find(codesRF==Ytest))/length(Ytest);
     disp(['accRF = ' num2str(accRF)])
-    acc{ifrac} = [acc{ifrac};accRF];  %save accuracy
+    acc{c} = [acc{c};accRF];  %save accuracy
     
     % figure
     % imagesc(matRF), colormap gray
@@ -100,10 +101,10 @@ for frac = frac_range,
     %Params
     % p = 0.005;   % perc of test data to use as unlabeled
     epochs = 10; % # of times unlabeled data is sampled
-    RFconf = 0; %the confidence of RF for label prediction
+    RFconf = 0.8; %the confidence of RF for label prediction
     
     ind = randsample(size(Xtest,1),size(Xtest,1),false); %randomly select unlabeled data from test set
-    Nsamples = 5;%floor(p*size(Xtest,1));                      %n of samples per epoch
+    Nsamples = 100;%floor(p*size(Xtest,1));                      %n of samples per epoch
     
     if epochs*Nsamples >= size(Xtest,1),
         error('too many unlabeled samples')
@@ -113,7 +114,7 @@ for frac = frac_range,
         Xunl = Xtest(ind(Nsamples*(k-1)+1:Nsamples*k),:);    %new unlabeled features
         
         [codesRF,P_RF] = predict(forest,Xunl);  %predict labels for unlabeled (test) data
-        ind_conf = find(max(P_RF,[],2) > RFconf);
+        ind_conf = find(max(P_RF,[],2) < RFconf);
         
         disp(sprintf('%d of %d selected', length(ind_conf), Nsamples));
         
@@ -132,12 +133,12 @@ for frac = frac_range,
         
         accRF = length(find(cell2vec(codesRF)==Ytest))/length(Ytest);
         disp(['accRF = ' num2str(accRF)])
-        acc{ifrac} = [acc{ifrac};accRF];  %save accuracy
+        acc{c} = [acc{c};accRF];  %save accuracy
         
         
     end
     
-    f{end+1} = num2str(floor(size(X,1)*frac));
+    f{end+1} = num2str(Ns);
 end
 
 figure
