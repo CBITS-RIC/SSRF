@@ -1,6 +1,7 @@
 %Inductive Semi-Supervised RF
 %Splittrain: split train data into labeled and unlabeled
-%1 Subj: TO BE FINISHED!
+%1 Subj: Split Train within same subjects
+
 close all, clear all; clc
 ifrac = 0;
 Y = load('../Data/UCIHARDataset/train/y_train.txt');
@@ -10,11 +11,16 @@ X = load('../Data/UCIHARDataset/train/X_train.txt');
 % X = load('../Data/ArtData/data_art.mat');   X = X.data;
 
 subjects = load('../Data/UCIHARDataset/train/subject_train.txt');
-Ns_range = unique(subjects);
+Ns_range = unique(subjects);    %subject codes
+Ns = 1;
 
+ind = find(subjects == Ns);
+X = X(1:ind(end),:); Y = Y(1:ind(end));
+
+%amount of labeled data for each subject
 frac_begin = log(.01);
 frac_end = log(.9);
-n_frac = 10;
+n_frac = 10;    %# of steps between fractions of data
 f = {};
 
 frac_range = exp(frac_begin:(frac_end-frac_begin)/(n_frac-1):frac_end);
@@ -26,7 +32,7 @@ for frac = frac_range,
     ifrac = ifrac+1;
     acc{ifrac} = [];
     
-    clearvars -except frac ifrac f X Y acc;
+    clearvars -except frac ifrac f X Y acc subjects Ns;
     
     
     
@@ -42,7 +48,7 @@ for frac = frac_range,
     split = floor(size(X,1)*frac);
     Xtrain = X(1:split,:);   Ytrain = Y(1:split);          %labeled data
     Xtest = X(split+1:end,:);   Ytest = Y(split+1:end);            %unlabeled data
-    
+  
     disp(sprintf('%d training datapoints', size(Xtrain,1)));
     disp(sprintf('%d test datapoints', size(Xtest,1)));
     
@@ -104,7 +110,7 @@ for frac = frac_range,
     %Params
     % p = 0.005;   % perc of test data to use as unlabeled
     epochs = 10; % # of times unlabeled data is sampled
-    RFconf = 0; %the confidence of RF for label prediction
+    RFconf = 1; %the confidence of RF for label prediction
     
     ind = randsample(size(Xtest,1),size(Xtest,1),false); %randomly select unlabeled data from test set
     Nsamples = 5;%floor(p*size(Xtest,1));                      %n of samples per epoch
@@ -117,7 +123,7 @@ for frac = frac_range,
         Xunl = Xtest(ind(Nsamples*(k-1)+1:Nsamples*k),:);    %new unlabeled features
         
         [codesRF,P_RF] = predict(forest,Xunl);  %predict labels for unlabeled (test) data
-        ind_conf = find(max(P_RF,[],2) > RFconf);
+        ind_conf = find(max(P_RF,[],2) <= RFconf);
         
         disp(sprintf('%d of %d selected', length(ind_conf), Nsamples));
         

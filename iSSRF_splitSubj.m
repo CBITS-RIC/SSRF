@@ -6,6 +6,10 @@ c = 0;
 Y = load('../Data/UCIHARDataset/train/y_train.txt');
 X = load('../Data/UCIHARDataset/train/X_train.txt');
 
+Xtest = load('../Data/UCIHARDataset/test/X_test.txt');   
+Ytest = load('../Data/UCIHARDataset/test/y_test.txt');   
+
+
 subjects = load('../Data/UCIHARDataset/train/subject_train.txt');
 Ns_range = unique(subjects);
 Ns_range = Ns_range(1:end-5)';
@@ -16,13 +20,13 @@ f = {};
 
 % frac_range = exp(frac_begin:(frac_end-frac_begin)/(n_frac-1):frac_end);
 
-for Ns = Ns_range,
+for Ns = 3,
     
     Ns
     c = c+1;
     acc{c} = [];
     
-    clearvars -except c f X Y acc subjects Ns;
+    clearvars -except c f X Y Xtest Ytest acc subjects Ns;
     
     
     
@@ -38,7 +42,7 @@ for Ns = Ns_range,
     ind = find(subjects == Ns);
     split = ind(end);
     Xtrain = X(1:split,:);   Ytrain = Y(1:split);          %labeled data
-    Xtest = X(split+1:end,:);   Ytest = Y(split+1:end);            %unlabeled data
+     
     
     disp(sprintf('%d training datapoints', size(Xtrain,1)));
     disp(sprintf('%d test datapoints', size(Xtest,1)));
@@ -100,11 +104,11 @@ for Ns = Ns_range,
     
     %Params
     % p = 0.005;   % perc of test data to use as unlabeled
-    epochs = 10; % # of times unlabeled data is sampled
-    RFconf = 0.8; %the confidence of RF for label prediction
+    epochs = 12; % # of times unlabeled data is sampled
+    RFconf = .7; %the confidence of RF for label prediction
     
     ind = randsample(size(Xtest,1),size(Xtest,1),false); %randomly select unlabeled data from test set
-    Nsamples = 100;%floor(p*size(Xtest,1));                      %n of samples per epoch
+    Nsamples = 200;%floor(p*size(Xtest,1));                      %n of samples per epoch
     
     if epochs*Nsamples >= size(Xtest,1),
         error('too many unlabeled samples')
@@ -114,7 +118,7 @@ for Ns = Ns_range,
         Xunl = Xtest(ind(Nsamples*(k-1)+1:Nsamples*k),:);    %new unlabeled features
         
         [codesRF,P_RF] = predict(forest,Xunl);  %predict labels for unlabeled (test) data
-        ind_conf = find(max(P_RF,[],2) < RFconf);
+        ind_conf = find(max(P_RF,[],2) <= RFconf);
         
         disp(sprintf('%d of %d selected', length(ind_conf), Nsamples));
         
