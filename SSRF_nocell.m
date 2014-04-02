@@ -18,7 +18,7 @@ n_class = length(unique(Y)); %the classes
 ntrees = 100;     %forest size
 T0 = 5;          %initial temperature
 alpha = 1;     %coeff to control the weight of the unlabeled part in the loss function
-epochs = 200;     %epochs for unlabeled training
+epochs =200;     %epochs for unlabeled training
 tau = 50;  %cooling fcn time constant
 % frac = 0.99;
 

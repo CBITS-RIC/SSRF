@@ -50,26 +50,34 @@ Xtrain = load('../Data/UCIHARDataset/train/X_train.txt');
 disp('RF Train');
 
 ntrees = 100;
+mtry = round(sqrt(size(Xtrain,2)));
 OOBVarImp = 'off';   %enable variable importance measurement
 
-forest = TreeBagger(ntrees,Xtrain,Ytrain','OOBVarImp',OOBVarImp);
+%MATLAB Implementation
+% forest = TreeBagger(ntrees,Xtrain,Ytrain','OOBVarImp',OOBVarImp);
+
 
 %one classification tree
 % tree = classregtree(features,codesTrue,'method','classification');
 % view(tree,'mode','graph') % graphic description
 
 %plot oobe
-if strcmp(OOBVarImp,'on')
-    figure
-    plot(oobError(forest));
-    
-    %plot var importance
-    if strcmp(OOBVarImp,'on')
-        figure('name',['k-fold ' num2str(k)])
-        barh(forest.OOBPermutedVarDeltaError);
-        set(gca,'ytick',1:length(trainingClassifierData.featureLabels),'yticklabel',trainingClassifierData.featureLabels)
-    end
-end
+% if strcmp(OOBVarImp,'on')
+%     figure
+%     plot(oobError(forest));
+%     
+%     %plot var importance
+%     if strcmp(OOBVarImp,'on')
+%         figure('name',['k-fold ' num2str(k)])
+%         barh(forest.OOBPermutedVarDeltaError);
+%         set(gca,'ytick',1:length(trainingClassifierData.featureLabels),'yticklabel',trainingClassifierData.featureLabels)
+%     end
+% end
+
+
+%R implementation of random forest(uses Mex file)
+forest = classRF_train(Xtrain,Ytrain',ntrees,mtry); %the train set does not contain <80%threshold clips
+
 
 
 
@@ -109,10 +117,16 @@ Xtest = load('../Data/UCIHARDataset/test/X_test.txt');
 %% Predict and Use Unlabeled Data
 acc = [];
 %Predict
-[codesRF,P_RF] = predict(forest,Xtest);
+% [codesRF,P_RF] = predict(forest,Xtest);
 
 %one classification tree
 % codesRF = eval(tree,features);
+
+%R Implementation
+test_options.predict_all = 1; %returns prediction per tree and votes
+[codesRF, votes, prediction_per_tree] = classRF_predict(Xtest,forest,test_options); 
+P_RF = votes./forest.ntree;  %Prob of each class
+
 
 
 %results
@@ -128,24 +142,30 @@ acc = [acc;accRF];  %save accuracy
 % plot(codesTrue,'g'); plot(codesRF,'r')
 
 %Params
-p = 0.02;   % perc of test data to use as unlabeled
+p = .1;   % perc of test data to use as unlabeled
 epochs = 10; % # of times unlabeled data is sampled
-RFconf = 0; %the confidence of RF for label prediction
+RFconf = 1.1; %the confidence of RF for label prediction
 
 ind = randsample(size(Xtest,1),size(Xtest,1),false); %randomly select unlabeled data from test set
 Nsamples = floor(p*size(Xtest,1));                      %n of samples per epoch
 
-if epochs*p >= 1
+if epochs*p > 1
     error('too many unlabeled samples')
 end
 
 for k = 1:epochs
     Xunl = Xtest(ind(Nsamples*(k-1)+1:Nsamples*k),:);    %new unlabeled features
     
-    [codesRF,P_RF] = predict(forest,Xunl);  %predict labels for unlabeled (test) data
-    ind_conf = find(max(P_RF,[],2) > RFconf); 
+    %Predict - MATLAB
+%     [codesRF,P_RF] = predict(forest,Xunl);  %predict labels for unlabeled (test) data
     
-    disp(sprintf('percent selected = %.2f',length(ind_conf)/Nsamples));
+    %Predict - R
+    [codesRF, votes, prediction_per_tree] = classRF_predict(Xunl,forest,test_options); 
+	P_RF = votes./forest.ntree;  %Prob of each class
+
+    ind_conf = find(max(P_RF,[],2) < RFconf); 
+    
+    disp(sprintf('Samples selected = %d of %d',length(ind_conf),Nsamples));
     
     codesRF = codesRF(ind_conf);  %select datapoints which exceed confidence threshold
     Xunl = Xunl(ind_conf,:);
@@ -155,10 +175,20 @@ for k = 1:epochs
     
     %Train RF on new labeled data + previous data (can we do incremental
     %training with RF?)
-    forest = TreeBagger(ntrees,Xtrain,Ytrain,'OOBVarImp',OOBVarImp);
+    clear forest; rng('shuffle');
     
-    %predict on the whole test data
-    [codesRF,P_RF] = predict(forest,Xtest);  %predict labels for test data
+    %Train - MATLAB
+%     forest = TreeBagger(ntrees,Xtrain,Ytrain,'OOBVarImp',OOBVarImp);
+    
+    %Train - R
+    forest = classRF_train(Xtrain,Ytrain',ntrees,mtry); %the train set does not contain <80%threshold clips
+
+    %predict on the whole test data - Matlab
+%     [codesRF,P_RF] = predict(forest,Xtest);  %predict labels for test data
+    
+    %predict - R
+    [codesRF, votes, prediction_per_tree] = classRF_predict(Xtest,forest,test_options);
+
     
     accRF = length(find(cell2vec(codesRF)==Ytest))/length(Ytest);
     disp(['accRF = ' num2str(accRF)])
