@@ -1,6 +1,8 @@
 %%SSRF with DA from Leistner, Saffari et al. 2009 paper
 %Authors: Luca Lonini and Sohrab Saeb
 %Use modified Matlab TreeBagger class (X,Y properties set to public)
+%Added random selection of indices for labeled/unlabeled (idxLabs,idxUnls)
+%save history of optimal probability Pu_opt (not done yet!)
 
 clear all;
 close all
@@ -10,7 +12,7 @@ tic;
 load g50c.mat;
 % X = meas;   %predictors
 % Y = label2code(species); %labels
-Y = y/2+1.5;
+Y = y/2+1.5;               %change labels from [-1,1] to [1,2]
 
 n_class = length(unique(Y)); %the classes
 
@@ -18,8 +20,8 @@ n_class = length(unique(Y)); %the classes
 ntrees = 100;     %forest size
 T0 = 5;          %initial temperature
 alpha = 1;     %coeff to control the weight of the unlabeled part in the loss function
-epochs =200;     %epochs for unlabeled training
-tau = 50;  %cooling fcn time constant
+epochs = 200;     %epochs for unlabeled training
+tau = 40;  %cooling fcn time constant
 % frac = 0.99;
 
 %Randomly selects a portion of labeled data. Rest is Unlabeled
@@ -29,8 +31,11 @@ tau = 50;  %cooling fcn time constant
 
 % Xl = X(labeled,:);   Yl = Y(labeled);          %labeled data
 % Xu = X(~labeled,:);  Yu = zeros(size(Xu,1),1);   %unlabeled data
-Xl = X(idxLabs(1,:),:);    Yl = Y(idxLabs(1,:));
-Xu = X(idxUnls(1,:),:);    Yu = Y(idxUnls(1,:));
+
+% idx = randi(10,1);
+idx = 1;
+Xl = X(idxLabs(idx,:),:);    Yl = Y(idxLabs(idx,:));
+Xu = X(idxUnls(idx,:),:);    Yu = Y(idxUnls(idx,:));
 Yu_forest = zeros(ntrees*size(Xu,1),1);          %unlabeled data for entire forest
 
 %%Train RF on labeled data

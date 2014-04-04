@@ -8,9 +8,8 @@ F = cell(N,1);  %cell array containing all the trained forests
 for k = 1:N
    
     F{k} = config;
-    if k > N/2
-        F{k}.tau = 50;
-    end
+    tau = F{k}.tau;
+    F{k}.tau = tau*2*k;
     F{k}.trainforest(epochs);
     
 end

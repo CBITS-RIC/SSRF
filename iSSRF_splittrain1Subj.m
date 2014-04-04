@@ -18,7 +18,7 @@ ind = find(subjects == Ns);
 X = X(1:ind(end),:); Y = Y(1:ind(end));
 
 %amount of labeled data for each subject
-frac_begin = log(.01);
+frac_begin = log(.1);
 frac_end = log(.9);
 n_frac = 10;    %# of steps between fractions of data
 f = {};
@@ -55,7 +55,7 @@ for frac = frac_range,
     %Train RF
     disp('RF Train');
     
-    ntrees = 10;
+    ntrees = 100;
     OOBVarImp = 'off';   %enable variable importance measurement
     
     forest = TreeBagger(ntrees,Xtrain,Ytrain','OOBVarImp',OOBVarImp);

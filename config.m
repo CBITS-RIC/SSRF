@@ -3,8 +3,8 @@ function forest = config()
 %parameters
 ntrees = 100;     %forest size
 T0 = 5;          %initial temperature
-alpha = 0.1;     %coeff to control the weight of the unlabeled part in the loss function
-tau = 25;  %cooling fcn time constant
+alpha = 1;     %coeff to control the weight of the unlabeled part in the loss function
+tau = 4;  %cooling fcn time constant
 
 
 %dataset
