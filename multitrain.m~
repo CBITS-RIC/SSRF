@@ -1,0 +1,24 @@
+function F = multitrain
+
+close all
+clear all
+epochs = 500;
+acc = [];
+tau = [50 55 60 65 70 75 80];
+N = length(tau);    %# of simulations to run
+
+F = cell(N,1);  %cell array containing all the trained forests
+
+for k = 1:N
+   
+    F{k} = config;
+    F{k}.tau = tau(k);
+    F{k}.trainforest_multic(epochs);
+    acc = [acc;F{k}.acc];
+%     tau = [tau;F{k}.tau];
+    
+end
+
+figure
+plot(acc','LineWidth',2)
+save('trainedforests_10trees.mat','F')

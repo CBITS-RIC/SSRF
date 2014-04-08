@@ -11,11 +11,11 @@ close all
 tic;
 rng('default')   %fix random number generator seed 
 %parameters
-ntrees = 50;     %forest size
+ntrees = 10;     %forest size
 T0 = 5;          %initial temperature
 alpha = 1;     %coeff to control the weight of the unlabeled part in the loss function
 epochs = 200;     %epochs for unlabeled training
-tau = 50;  %cooling fcn time constant
+tau = 60;  %cooling fcn time constant
 
 
 
