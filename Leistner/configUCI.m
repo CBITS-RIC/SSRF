@@ -6,7 +6,7 @@
 function forest = configUCI(Ntr,Nte)
 
 %parameters
-ntrees = 3;     %forest size
+ntrees = 10;     %forest size
 T0 = 5;          %initial temperature
 alpha = 1;     %coeff to control the weight of the unlabeled part in the loss function
 tau = 60;  %cooling fcn time constant

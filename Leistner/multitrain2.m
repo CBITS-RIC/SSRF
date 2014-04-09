@@ -1,26 +1,28 @@
 close all
 clear all
-epochs = 4;
-tau = [50 60 70 80 90 100];
+epochs = 100;
+%tau = [50 60 70 80 90 100];
+T0 = [.3];
 % alpha = [0.75 1.25 1.5]; 
 subj = 21;   %total # of train subjects
 % F = cell(length(tau),1);  %cell array containing all the trained forests
-acc = zeros(length(tau),epochs+1,subj); %matrix with accuracy for every subject
-
+acc = zeros(length(T0),epochs+1,subj); %matrix with accuracy for every subject
+Nte = 3;%9
 tic
 
 %main loop over # of train vs test subjects
-for Ntr = 1:subj
+for Ntr =3% 1:subj
     
-    sprintf('Train subjects %d', num2str(Ntr));
+    disp(sprintf('Train subjects %d', num2str(Ntr)));
 
     %loop over model parameters (tau, alpha, etc)
-    for k = 1:length(tau)
+    for k = 1:length(T0)
         
-        F = configUCI(Ntr,9);     %initialize a forest - specify Ntr and Nte subjects
+        F = configUCI(Ntr,Nte);     %initialize a forest - specify Ntr and Nte subjects
         
-        F.tau = tau(k);          %set tau
+        F.tau = 80;%tau(k);          %set tau
         %     F{k}.alpha = alpha(k);    %set alpha
+        F.T0 = T0(k);           %set T0
         
         F.trainforest_multic(epochs);    %train ssrf
         
@@ -34,7 +36,7 @@ end
 
 toc
 
-save('accforests.mat',acc);
+save 'accforests.mat' acc;
 
 % save('trainedforests_40trees_1tr_6te_tau70.mat','F')
 

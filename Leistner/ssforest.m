@@ -204,7 +204,8 @@ classdef ssforest < handle
                  
                 [Yfu,Pu_forest] = predict(forest,Xu);
                 Yfu = str2num(cell2mat(Yfu));
-                acc(m+1) = sum(Yu==Yfu)/length(Yu)
+                acc(m+1) = sum(Yu==Yfu)/length(Yu);
+                acc(m+1)    %print accuracy over training
                 
             end
             
