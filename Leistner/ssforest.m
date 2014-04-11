@@ -124,7 +124,7 @@ classdef ssforest < handle
         
         function [acc, Tvals] = trainforest_multic(this,epochs)
             
-            rng('default')   %fix random number generator seed
+%             rng('default')   %fix random number generator seed
 
             %labeled and unlabeled data
             

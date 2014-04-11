@@ -4,9 +4,9 @@ close all
 clear all
 epochs = 200;
 acc = [];
-% tau = [70 80];
-alpha = [0.75 1.25 1.5]; 
-N = length(alpha);    %# of simulations to run
+%tau = [70];
+trees = [5 20 40 80 160];
+N = length(trees);    %# of simulations to run
 
 F = cell(N,1);  %cell array containing all the trained forests
 tic
@@ -15,22 +15,21 @@ for k = 1:N
     F{k} = config;
     
 %     F{k}.tau = tau(k);
-    F{k}.alpha = alpha(k);
+    F{k}.ntrees = trees(k);
     
     F{k}.trainforest_multic(epochs);
     
     acc = [acc;F{k}.acc];
-%     tau = [tau;F{k}.tau];
     
 end
 t= toc
 
-% save('trainedforests_40trees_1tr_6te_tau70.mat','F')
+save('trainedforests_vartrees_4tr_4te_tau80.mat','F')
 
 figure, hold on
 plot(acc','LineWidth',2)
-for s = 1:length(alpha)
-    l{s} = num2str(alpha(s));
+for s = 1:N
+    l{s} = num2str(trees(s));
 end
 
 legend(l)

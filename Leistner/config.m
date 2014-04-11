@@ -1,10 +1,10 @@
 function forest = config()
 
 %parameters
-ntrees = 10;     %forest size
+ntrees = 40;     %forest size
 T0 = 5;          %initial temperature
 alpha = 1;     %coeff to control the weight of the unlabeled part in the loss function
-tau = 60;  %cooling fcn time constant
+tau = 80;  %cooling fcn time constant
 
 
 %% g50c dataset
@@ -36,17 +36,11 @@ Ytrain = load('../Data/UCIHARDataset/train/y_train.txt');
 %Select # of subjects for labeled (train) and unlabeled (test) 
 subjects = load('../Data/UCIHARDataset/train/subject_train.txt');
 subject_codes = unique(subjects);
-n_train = 3;
-n_test = 3;
+n_train = 4;
+n_test = 4;
 
-%randomly select subject
-% rng('default')   %fix random number generator seed
-% 
-% ind = randperm(length(unique(subjects)));
-% subj_train = ind(1:n_train);
-% subj_test  = ind(n_train+1:n_train+n_test);
-
-%ordered selection of subjects
+%%this should be made such that the training and test subjects are picked
+%randomly
 subj_train = subject_codes(1:n_train);
 subj_test  = subject_codes(n_train+1:n_train+n_test);
 

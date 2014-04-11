@@ -6,7 +6,7 @@
 function forest = configUCI(Ntr,Nte)
 
 %parameters
-ntrees = 10;     %forest size
+ntrees = 30;     %forest size
 T0 = 5;          %initial temperature
 alpha = 1;     %coeff to control the weight of the unlabeled part in the loss function
 tau = 60;  %cooling fcn time constant
@@ -21,10 +21,10 @@ tau = 60;  %cooling fcn time constant
 
 %% UCI Dataset
 
-frac = 0.1;    %the frac of labeled data
+% frac = 0.1;    %the frac of labeled data
 
 
-disp('Load UCI Dataset')
+% disp('Load UCI Dataset')
 
 Xtrain = load('../Data/UCIHARDataset/train/X_train.txt');
 Ytrain = load('../Data/UCIHARDataset/train/y_train.txt');
@@ -68,7 +68,8 @@ n_class = length(unique(Ytrain)); %the # of classes
 % classes = unique(Ytrain);         %the class codes
 
 
-Xl = Xtrain(ind_train,:);   Yl = Ytrain(ind_train);          %labeled data
+% Xl = Xtrain(ind_train,:);   Yl = Ytrain(ind_train);          %labeled data
+Xl = repmat(Xtrain(ind_train,:),3,1);   Yl = repmat(Ytrain(ind_train),3,1);          %labeled data
 Xu = Xtest(ind_test,:);  Yu = Ytest(ind_test);   %unlabeled data
 % Yu_forest = zeros(ntrees*size(Xu,1),1);          %unlabeled data for entire forest
 
