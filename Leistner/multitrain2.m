@@ -1,7 +1,7 @@
 clc
 close all
 clear all
-epochs = 50;
+epochs = 100;
 % tau = [10 20 30 40];
 T0 = 1;
 % alpha = [0.75 1.25 1.5]; 
@@ -10,9 +10,8 @@ subj = 3;   %total # of train (labeled) subjects to use
 acc = zeros(length(T0),epochs+1,subj); %matrix with accuracy for every subject
 Nte = 3;    %# of subject to use as test (unlabeled)
 
-
 %main loop over # of train vs test subjects
-for Ntr = 1
+for Ntr = 3
     
     fprintf('# of Training subjects: %d \n', Ntr);
 
