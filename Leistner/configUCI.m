@@ -6,7 +6,7 @@
 function forest = configUCI(Ntr,Nte)
 
 %parameters
-ntrees = 30;     %forest size
+ntrees = 10;     %forest size
 T0 = 5;          %initial temperature
 alpha = 1;     %coeff to control the weight of the unlabeled part in the loss function
 tau = 60;  %cooling fcn time constant
@@ -68,8 +68,8 @@ n_class = length(unique(Ytrain)); %the # of classes
 % classes = unique(Ytrain);         %the class codes
 
 
-% Xl = Xtrain(ind_train,:);   Yl = Ytrain(ind_train);          %labeled data
-Xl = repmat(Xtrain(ind_train,:),3,1);   Yl = repmat(Ytrain(ind_train),3,1);          %labeled data
+Xl = Xtrain(ind_train,:);   Yl = Ytrain(ind_train);          %labeled data
+% Xl = repmat(Xtrain(ind_train,:),3,1);   Yl = repmat(Ytrain(ind_train),3,1);          %labeled data
 Xu = Xtest(ind_test,:);  Yu = Ytest(ind_test);   %unlabeled data
 % Yu_forest = zeros(ntrees*size(Xu,1),1);          %unlabeled data for entire forest
 
