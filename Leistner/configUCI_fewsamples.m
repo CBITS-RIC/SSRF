@@ -38,12 +38,14 @@ Y = Y(ind, :);
 classes = unique(Y);         %the class codes
 n_class = length(classes); %the # of classes
 
+% rng('default')   %fix random number generator seed
+
 ind_sample = [];
 for i=1:n_class,
     ind_class = find(Y==classes(i));
     ind_sample = [ind_sample randsample(ind_class, Nsamp)'];
 end
-Xl = X(ind_sample, :);
+Xl = X(ind_sample,:);
 Yl = Y(ind_sample);
 
 inds = 1:size(X,1);

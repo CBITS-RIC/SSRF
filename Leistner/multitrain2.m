@@ -7,8 +7,9 @@ T0 = 1;
 % alpha = [0.75 1.25 1.5]; 
 subj = 3;   %total # of train (labeled) subjects to use
 % F = cell(length(tau),1);  %cell array containing all the trained forests
-acc = zeros(length(T0),epochs+1,subj); %matrix with accuracy for every subject
+acc = zeros(length(T0),epochs+1,subj); %matrix with accuracy over unlabeled data for every subject
 oobe = acc;                            %matrix with oobe for every subject and epoch
+acc_l = acc;                           %matrix with accuracy over labeled data for every subject
 Nte = 3;    %# of subject to use as test (unlabeled)
 
 %main loop over # of train vs test subjects
@@ -17,8 +18,8 @@ for Ntr = 1%3
     fprintf('# of Training subjects: %d \n', Ntr);
 
     %loop over model parameters (tau, alpha, etc)
-    for k = 1%:length(tau)
-        
+    for k = 1:10%:length(tau)
+        k
 %         F = configUCI_fewsamples(Ntr, Nte); %initialize a forest - specify Ntr and Nte subjects
         F = configUCI_fewsamples(2);     
         
@@ -32,6 +33,7 @@ for Ntr = 1%3
         toc
         
         acc(k,:,Ntr) = F.acc;   %save accuracy over parameters
+        acc_l(k,:,Ntr) = F.acc_l;   %accuracy for labeled data
         oobe(k,:,Ntr) = F.oobe; %save OOBE
         clear F
         
@@ -42,6 +44,16 @@ end
 toc
 
 save 'accforests.mat' acc;
+
+%%Plot improvement in accuracy over many sims (k)
+I = [acc(:,1,1) acc(:,end,1)];
+figure('name','2 samples'), hold on
+bar(I), ylim([0.5 1])
+figure
+I = acc(:,end,1)-acc(:,1,1);
+bar(I);
+mean(I)
+
 % save('trainedforests_40trees_1tr_6te_tau70.mat','F')
 
 % figure, hold on
