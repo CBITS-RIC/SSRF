@@ -67,16 +67,9 @@ end
 n_class = length(unique(Ytrain)); %the # of classes
 % classes = unique(Ytrain);         %the class codes
 
-
-<<<<<<< HEAD
-Xl = Xtrain(ind_train,:);   Yl = Ytrain(ind_train);          %labeled data
-% Xl = repmat(Xtrain(ind_train,:),3,1);   Yl = repmat(Ytrain(ind_train),3,1);          %labeled data
-Xu = Xtest(ind_test,:);  Yu = Ytest(ind_test);   %unlabeled data
-=======
 Xl = Xtrain(ind_train,:); Yl = Ytrain(ind_train);          %labeled data
 % Xl = repmat(Xtrain(ind_train,:),3,1);   Yl = repmat(Ytrain(ind_train),3,1);          %labeled data
 Xu = Xtest(ind_test,:); Yu = Ytest(ind_test);   %unlabeled data
->>>>>>> 2e9523de59fe5c928dab23f3e7c8e4ead8110684
 % Yu_forest = zeros(ntrees*size(Xu,1),1);          %unlabeled data for entire forest
 
 %% Params to init forests

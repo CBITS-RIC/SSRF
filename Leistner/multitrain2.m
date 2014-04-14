@@ -12,16 +12,17 @@ oobe = acc;                            %matrix with oobe for every subject and e
 Nte = 3;    %# of subject to use as test (unlabeled)
 
 %main loop over # of train vs test subjects
-for Ntr = 3
+for Ntr = 1%3
     
     fprintf('# of Training subjects: %d \n', Ntr);
 
     %loop over model parameters (tau, alpha, etc)
     for k = 1%:length(tau)
         
-        F = configUCI(Ntr,Nte);     %initialize a forest - specify Ntr and Nte subjects
+%         F = configUCI_fewsamples(Ntr, Nte); %initialize a forest - specify Ntr and Nte subjects
+        F = configUCI_fewsamples(2);     
         
-        F.tau = 80;%tau(k);          %set tau (80)
+        F.tau = 160;%tau(k);          %set tau (80)
         %     F{k}.alpha = alpha(k);    %set alpha
         F.T0 = T0;%(k);           %set T0
         

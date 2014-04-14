@@ -63,12 +63,18 @@ classdef ssforest < handle
             oobind = forest.OOBIndices;
             GE = zeros(this.ntrees,1);
             for t = 1:this.ntrees
+                %check if the tree is observing all the samlples
+                if ~sum(oobind(:,t)),
+%                     disp('oobind: Found a tree which observes all the samples.');
+                    GE(t) = nan;
+                    continue;
+                end
                 [Yp,~] = predict(forest,Xl(logical(oobind(:,t)),:),'trees', t);   %Pl is the prob of each tree
                 Yp = str2num(cell2mat(Yp));
                 acc_oobe = mean(Yp==Yl(logical(oobind(:,t))));
                 GE(t) = 1-acc_oobe;  %generalization error for 1 tree
             end
-            this.oobe(1) = mean(GE);
+            this.oobe(1) = nanmean(GE);
             
             %% DA optimization
             
@@ -127,12 +133,19 @@ classdef ssforest < handle
                 end
                 GE = zeros(this.ntrees,1);
                 for t = 1:this.ntrees
+                    %check if the tree is observing all the training
+                    %samples
+                    if ~sum(OOBM(:,t)),
+%                         disp('OOBM: Found a tree which observes all the samples.');
+                        GE(t) = nan;
+                        continue;
+                    end
                     [Yp,~] = predict(forest,Xl(logical(OOBM(:,t)),:),'trees', t);   %Pl is the prob of each tree
                     Yp = str2num(cell2mat(Yp));
                     acc_oobe = mean(Yp==Yl(logical(OOBM(:,t))));
                     GE(t) = 1-acc_oobe;  %generalization error for 1 tree
                 end
-                this.oobe(m+1) = mean(GE);
+                this.oobe(m+1) = nanmean(GE);
                 
             end
             
