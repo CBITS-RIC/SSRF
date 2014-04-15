@@ -21,7 +21,7 @@ for Ntr = 1%3
     for k = 1:10%:length(tau)
         k
 %         F = configUCI_fewsamples(Ntr, Nte); %initialize a forest - specify Ntr and Nte subjects
-        F = configUCI_fewsamples(2);     
+        F = configUCI_fewsamples(4);     
         
         F.tau = 160;%tau(k);          %set tau (80)
         %     F{k}.alpha = alpha(k);    %set alpha
