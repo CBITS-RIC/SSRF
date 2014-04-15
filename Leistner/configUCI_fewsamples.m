@@ -43,7 +43,15 @@ n_class = length(classes); %the # of classes
 ind_sample = [];
 for i=1:n_class,
     ind_class = find(Y==classes(i));
-    ind_sample = [ind_sample randsample(ind_class, Nsamp)'];
+    
+    %finding the middle sample in each trial
+    trans_end = find(diff(ind_class)>1);
+    trans_start = trans_end+1;
+    trans_start = [ind_class(1), ind_class(trans_start)'];
+    trans_end = [ind_class(trans_end)', ind_class(end)];
+    ind_middle = round((trans_start + trans_end)/2);
+%     ind_sample = [ind_sample randsample(ind_class, Nsamp)'];
+    ind_sample = [ind_sample ind_middle];
 end
 Xl = X(ind_sample,:);
 Yl = Y(ind_sample);
