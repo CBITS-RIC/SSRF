@@ -1,7 +1,7 @@
 clc
 close all
 clear all
-epochs = 100;
+epochs = 50;
 % tau = [10 20 30 40];
 T0 = 1;
 % alpha = [0.75 1.25 1.5]; 
@@ -23,7 +23,7 @@ for Ntr = 1%3
 %         F = configUCI_fewsamples(Ntr, Nte); %initialize a forest - specify Ntr and Nte subjects
         F = configUCI_fewsamples(4);     
         
-        F.tau = 160;%tau(k);          %set tau (80)
+        F.tau = 20;%tau(k);          %set tau (80)
         %     F{k}.alpha = alpha(k);    %set alpha
         F.T0 = T0;%(k);           %set T0
         

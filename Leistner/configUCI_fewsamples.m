@@ -40,7 +40,7 @@ n_class = length(classes); %the # of classes
 
 % rng('default')   %fix random number generator seed
 
-ind_sample = []; p = 0.01;  %take samples from 25% and 75% 
+ind_sample = []; p = 0.8;  %take samples from mid-p/2 to mid+p/2 (of the trial length)
 
 for i=1:n_class,
     ind_class = find(Y==classes(i));
@@ -50,13 +50,18 @@ for i=1:n_class,
     trans_start = trans_end+1;
     trans_start = [ind_class(1), ind_class(trans_start)'];
     trans_end = [ind_class(trans_end)', ind_class(end)];
-    ind_middle = round((trans_start + trans_end)/2);
+    ind_middle = round((trans_start + trans_end)/2)
     %     ind_sample = [ind_sample ind_middle];
     
     for n = 1:Nsamp/2
-        l1 = round(2*p*(trans_end(1)-ind_middle(1))); %there are 2 repetitions of each class (activity)
-        l2 = round(p*0.5*(trans_end(2)-ind_middle(2)));
-        ind_sample  = [ind_sample randi([ind_middle(1)-l1, ind_middle(1)+l1],1) randi([ind_middle(2)-l2, ind_middle(2)+l2],1)]
+%         l1 = round(p*0.5*(trans_end(1)-ind_middle(1))); %there are 2 repetitions of each class (activity)
+%         l2 = round(p*0.5*(trans_end(2)-ind_middle(2)));
+%         ind_sample  = [ind_sample randi([ind_middle(1)-l1, ind_middle(1)+l1],1) randi([ind_middle(2)-l2, ind_middle(2)+l2],1)]
+        ll = round(p*0.5*(trans_end-ind_middle));
+        for j = 1:length(ll),
+            ind_sample = [ind_sample randi([ind_middle(j)-ll(j), ind_middle(j)+ll(j)],1)];
+        end
+        ind_sample
     end
             
  %     ind_sample = [ind_sample randsample(ind_class, Nsamp)'];
