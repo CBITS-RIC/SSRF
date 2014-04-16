@@ -18,12 +18,12 @@ for Ntr = 1%3
     fprintf('# of Training subjects: %d \n', Ntr);
 
     %loop over model parameters (tau, alpha, etc)
-    for k = 1:10%:length(tau)
+    for k = 1:3%:length(tau)
         k
 %         F = configUCI_fewsamples(Ntr, Nte); %initialize a forest - specify Ntr and Nte subjects
-        F = configUCI_fewsamples(4);     
+        F = configUCI_fewsamples(2);     
         
-        F.tau = 20;%tau(k);          %set tau (80)
+        F.tau = 40;%tau(k);          %set tau (80)
         %     F{k}.alpha = alpha(k);    %set alpha
         F.T0 = T0;%(k);           %set T0
         
@@ -35,6 +35,9 @@ for Ntr = 1%3
         acc(k,:,Ntr) = F.acc;   %save accuracy over parameters
         acc_l(k,:,Ntr) = F.acc_l;   %accuracy for labeled data
         oobe(k,:,Ntr) = F.oobe; %save OOBE
+        Pl_forest{k} = F.Pl;    %probability over labeled data
+        Pu_forest{k} = F.Pu;    %probability over labeled data
+
         clear F
         
     end
@@ -53,6 +56,16 @@ figure
 I = acc(:,end,1)-acc(:,1,1);
 bar(I);
 mean(I)
+
+%compute Entropy over unlabeled data
+close all
+for i=1:k,
+    clear E
+    Pu_forest{i}(Pu_forest{i} == 0) = eps
+    E = -mean(sum(Pu_forest{i}.*log2(Pu_forest{i}),2));
+    figure(i), hold on
+    plot(E(:),'LineWidth',2)
+end
 
 % save('trainedforests_40trees_1tr_6te_tau70.mat','F')
 

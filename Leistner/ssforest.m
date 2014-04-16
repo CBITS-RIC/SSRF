@@ -14,6 +14,8 @@ classdef ssforest < handle
         n_class;
         acc; 
         acc_l;  %accuracy on labeled data
+        Pl;  %forest probability over labeled data
+        Pu;  %forest probability over unlabeled data
         oobe;   %out of bag (generalization) error
         Tvals;
     end
@@ -27,6 +29,8 @@ classdef ssforest < handle
             obj.tau = PARAM{4};
             obj.acc = [];
             obj.acc_l = [];
+            obj.Pl = [];
+            obj.Pu = [];
             obj.oobe = [];
             obj.Tvals = [];
             
@@ -61,11 +65,13 @@ classdef ssforest < handle
             [Yfu,Pu_forest] = predict(forest,Xu);
             Yfu = str2num(cell2mat(Yfu));
             acc(1) = sum(Yu==Yfu)/length(Yu)
-            
+            this.Pu(:,:,1) = Pu_forest;        %forest probability on unlabeled data
+                     
             %compute accuracy on labeled data 
             [Yfl,Pl_forest] = predict(forest,Xl);
             Yfl = str2num(cell2mat(Yfl));
             this.acc_l(1) = mean(Yl==Yfl);
+            this.Pl(:,:,1) = Pl_forest;        %forest probability on labeled data
             
             %% compute predictions (scores or prob) for each out-of-bag datapoint
             %find indices of out-of-bag labeled data
@@ -131,12 +137,14 @@ classdef ssforest < handle
                 Yfu = str2num(cell2mat(Yfu));
                 acc(m+1) = sum(Yu==Yfu)/length(Yu);
                 acc(m+1)    %print accuracy over training
-                
+                this.Pu(:,:,m+1) = Pu_forest;        %forest probability on unlabeled data
+
                 %compute accuracy on labeled data
                 [Yfl,Pl_forest] = predict(forest,Xl);
                 Yfl = str2num(cell2mat(Yfl));
                 this.acc_l(m+1) = mean(Yl==Yfl);
-                
+                this.Pl(:,:,m+1) = Pl_forest;        %forest probability on labeled data
+
                 %% compute predictions (scores or prob) for each out-of-bag datapoint
                 %find indices of out-of-bag labeled data
                 oobind = forest.OOBIndices;
