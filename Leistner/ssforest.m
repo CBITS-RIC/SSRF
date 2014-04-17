@@ -17,6 +17,7 @@ classdef ssforest < handle
         Pl;  %forest probability over labeled data
         Pu;  %forest probability over unlabeled data
         oobe;   %out of bag (generalization) error
+        confmat;    %confusion matrix at the end for unlabeled data
         Tvals;
     end
     
@@ -32,7 +33,9 @@ classdef ssforest < handle
             obj.Pl = [];
             obj.Pu = [];
             obj.oobe = [];
+            obj.confmat = [];
             obj.Tvals = [];
+            
             
             %dataset
             obj.Xl = PARAM{5}; obj.Yl = PARAM{6};
@@ -178,7 +181,7 @@ classdef ssforest < handle
 %             figure
 %             subplot(211), plot(acc,'LineWidth',2);
 %             subplot(212), plot(Tvals,'LineWidth',2)
-       
+            this.confmat = confusionmat(Yu,Yfu);
             this.acc = acc;
             this.Tvals = Tvals;
 

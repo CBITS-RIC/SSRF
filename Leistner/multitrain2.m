@@ -3,7 +3,7 @@ close all
 clear all
 epochs = 50;
 % tau = [10 20 30 40];
-T0 = 1;
+T0 = 1.25;
 % alpha = [0.75 1.25 1.5]; 
 subj = 3;   %total # of train (labeled) subjects to use
 % F = cell(length(tau),1);  %cell array containing all the trained forests
@@ -18,7 +18,7 @@ for Ntr = 1%3
     fprintf('# of Training subjects: %d \n', Ntr);
 
     %loop over model parameters (tau, alpha, etc)
-    for k = 1:10%:length(tau)
+    for k = 1:1%:length(tau)
         k
 %         F = configUCI_fewsamples(Ntr, Nte); %initialize a forest - specify Ntr and Nte subjects
 %         F = configUCI_fewsamples(2, 0);
@@ -38,6 +38,7 @@ for Ntr = 1%3
         oobe(k,:,Ntr) = F.oobe; %save OOBE
         Pl_forest{k} = F.Pl;    %probability over labeled data
         Pu_forest{k} = F.Pu;    %probability over labeled data
+        confmat{k} = F.confmat; %confusion matrix over unlabeled data at the final iteration
 
         clear F
         
@@ -58,15 +59,30 @@ I = acc(:,end,1)-acc(:,1,1);
 bar(I);
 mean(I)
 
-%compute Entropy over unlabeled data
+%compute Entropy over unlabeled and labeled data
 % close all
-% for i=1:k,
-%     clear E
-%     Pu_forest{i}(Pu_forest{i} == 0) = eps
-%     E = -mean(sum(Pu_forest{i}.*log2(Pu_forest{i}),2));
-%     figure; hold on
-%     plot(E(:),'LineWidth',2)
-% end
+
+E = [];
+for i=1:k,
+    Pl_forest{i}(Pl_forest{i} == 0) = eps
+    E_ = -mean(sum(Pl_forest{i}.*log2(Pl_forest{i}),2));
+    E = [E E_(:)];
+end
+figure, hold on
+plot(E(:,I>=0),'b','LineWidth',2)
+plot(E(:,I<0),'r','LineWidth',2)
+
+E = [];
+for i=1:k,
+    Pu_forest{i}(Pu_forest{i} == 0) = eps
+    Pu_forest{i} = max(Pu_forest{i},[],2);
+    E_ = -mean(sum(Pu_forest{i}.*log2(Pu_forest{i}),2));
+    E = [E E_(:)];
+end
+figure, hold on
+plot(E(:,I>=0),'b','LineWidth',2)
+plot(E(:,I<0),'r','LineWidth',2)
+
 
 % save('trainedforests_40trees_1tr_6te_tau70.mat','F')
 
