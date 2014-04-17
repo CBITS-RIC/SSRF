@@ -57,14 +57,15 @@ classdef ssforest < handle
             
             %% Train RF on labeled data
             
-            disp('Train RF on labeled data')
+            fprintf('Train RF (%d trees) on labeled data...\n', this.ntrees);
             
             forest = TreeBagger(this.ntrees,Xl,Yl,'OOBPred','on');
             
             % Computing the forest accuracy on unlabeled data
             [Yfu,Pu_forest] = predict(forest,Xu);
             Yfu = str2num(cell2mat(Yfu));
-            acc(1) = sum(Yu==Yfu)/length(Yu)
+            acc(1) = sum(Yu==Yfu)/length(Yu);
+            fprintf(' %f', acc(1));
             this.Pu(:,:,1) = Pu_forest;        %forest probability on unlabeled data
                      
             %compute accuracy on labeled data 
@@ -136,7 +137,7 @@ classdef ssforest < handle
                 [Yfu,Pu_forest] = predict(forest,Xu);
                 Yfu = str2num(cell2mat(Yfu));
                 acc(m+1) = sum(Yu==Yfu)/length(Yu);
-                acc(m+1)    %print accuracy over training
+                fprintf('\r %f', acc(m+1));    %print accuracy over training
                 this.Pu(:,:,m+1) = Pu_forest;        %forest probability on unlabeled data
 
                 %compute accuracy on labeled data
@@ -171,6 +172,7 @@ classdef ssforest < handle
                 this.oobe(m+1) = nanmean(GE);
                 
             end
+            fprintf('\n');
             
             %% Results
 %             figure
@@ -185,7 +187,7 @@ classdef ssforest < handle
 %% ***********Use also HMM to smooth Data**********************************        
          function [acc, Tvals] = trainforest_multicHMM(this,epochs)
             
-             rng('default')   %fix random number generator seed
+%              rng('default')   %fix random number generator seed
              
              %labeled and unlabeled data
              

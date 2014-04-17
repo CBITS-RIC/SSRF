@@ -7,7 +7,7 @@
 % RepFac: Repetition Factor - a number between 0 and 1 (1=repeating labeled samples until they become
 %         equal in amount to unlabeled samples; 0 = no repetition).
 
-function forest = configUCI_fewsamples(Nsamp, RepFac)
+function forest = configUCI_crosstrial(trial)
 
 %parameters
 ntrees = 10;     %forest size
@@ -32,7 +32,7 @@ subjects = load('../Data/UCIHARDataset/train/subject_train.txt');
 subject_codes = unique(subjects);
 
 %choosing the first training subject -- this is an example
-subj = subject_codes(1);
+subj = subject_codes(3);
 ind = find(subjects==subj);
 X = X(ind, :);
 Y = Y(ind, :);
@@ -46,27 +46,21 @@ ind_sample = []; p = 0.5;  %take samples from mid-p/2 to mid+p/2 (of the trial l
 
 for i=1:n_class,
     ind_class = find(Y==classes(i));
-    
-    %finding the middle sample in each trial
+
+    %finding the transitions between trials
     trans_end = find(diff(ind_class)>1);
     trans_start = trans_end+1;
     trans_start = [ind_class(1), ind_class(trans_start)'];
     trans_end = [ind_class(trans_end)', ind_class(end)];
-%     ind_middle = round((trans_start + trans_end)/2);
-    %     ind_sample = [ind_sample ind_middle];
-    
-    for n = 1:Nsamp
-        %         l1 = round(p*0.5*(trans_end(1)-ind_middle(1))); %there are 2 repetitions of each class (activity)
-        %         l2 = round(p*0.5*(trans_end(2)-ind_middle(2)));
-        %         ind_sample  = [ind_sample randi([ind_middle(1)-l1, ind_middle(1)+l1],1) randi([ind_middle(2)-l2, ind_middle(2)+l2],1)]
-%         ll = round(p*0.5*(trans_end-ind_middle));
-        for j = 1:length(trans_start),
-            %             ind_sample = [ind_sample randi([ind_middle(j)-ll(j), ind_middle(j)+ll(j)],1)];
-            ind_sample = [ind_sample randi([trans_start(j), trans_end(j)],1)];
-        end
-        
-    end
-    %     ind_sample = [ind_sample randsample(ind_class, Nsamp)'];
+
+%     for n = 1:Nsamp
+%         for j = 1:length(trans_start),
+%             ind_sample = [ind_sample randi([trans_start(j), trans_end(j)],1)];
+%         end
+%         
+%     end
+    %taking all samples from one trial (specified by trial)
+    ind_sample = [ind_sample, trans_start(trial):trans_end(trial)];
     
 end
 
@@ -82,12 +76,12 @@ Yu = Y(ind_nosample);
 
 % repeating training data to balance the total number of labeled vs
 % unlabeled
-Xl = repmat(Xl, ceil(eps+RepFac*length(Yu)/length(Yl)), 1);
-Yl = repmat(Yl, ceil(eps+RepFac*length(Yu)/length(Yl)), 1);
+% Xl = repmat(Xl, ceil(eps+RepFac*length(Yu)/length(Yl)), 1);
+% Yl = repmat(Yl, ceil(eps+RepFac*length(Yu)/length(Yl)), 1);
 
 fprintf('%d labeled samples\n', length(ind_sample));   
 fprintf('%d unlabeled samples\n', length(ind_nosample));
-fprintf('%d labeled samples after balancing\n', length(Yl));
+% fprintf('%d labeled samples after balancing\n', length(Yl));
 
 
 %% Params to init forests
