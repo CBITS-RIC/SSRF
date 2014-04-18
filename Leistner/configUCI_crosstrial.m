@@ -28,6 +28,8 @@ tau = 60;  %cooling fcn time constant
 X = load('../Data/UCIHARDataset/train/X_train.txt');
 Y = load('../Data/UCIHARDataset/train/y_train.txt');
 
+% X = X(:, 1:80);%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 subjects = load('../Data/UCIHARDataset/train/subject_train.txt');
 subject_codes = unique(subjects);
 

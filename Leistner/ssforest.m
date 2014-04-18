@@ -30,7 +30,7 @@ classdef ssforest < handle
             obj.tau = PARAM{4};
             obj.acc = [];
             obj.acc_l = [];
-            obj.Pl = [];
+            obj.Pl = {};
             obj.Pu = [];
             obj.oobe = [];
             obj.confmat = [];
@@ -46,7 +46,7 @@ classdef ssforest < handle
         
         
         
-        function [acc, Tvals] = trainforest_multic(this,epochs)
+        function [acc, Tvals] = trainforest_multic(this, epochs, repeat)
             
 %             rng('default')   %fix random number generator seed
 %             rng('shuffle')   %reset random number generator seed
@@ -75,7 +75,7 @@ classdef ssforest < handle
             [Yfl,Pl_forest] = predict(forest,Xl);
             Yfl = str2num(cell2mat(Yfl));
             this.acc_l(1) = mean(Yl==Yfl);
-            this.Pl(:,:,1) = Pl_forest;        %forest probability on labeled data
+            this.Pl{1} = Pl_forest;        %forest probability on labeled data
             
             %% compute predictions (scores or prob) for each out-of-bag datapoint
             %find indices of out-of-bag labeled data
@@ -96,6 +96,8 @@ classdef ssforest < handle
             this.oobe(1) = nanmean(GE);
             
             %% DA optimization
+            Xl_orig  = Xl;
+            Yl_orig = Yl;
             
             lgs=[];
             for m = 1:epochs,
@@ -125,6 +127,13 @@ classdef ssforest < handle
                 end
                 
                 
+                if repeat,
+                    RepFac = ceil(eps+T*length(Yu)/length(Yl_orig));
+                    Xl = repmat(Xl_orig, RepFac, 1);
+                    Yl = repmat(Yl_orig, RepFac, 1);
+                end
+                fprintf('\n %d labeled samples', size(Xl,1));   
+                
                 Xl_forest = repmat(Xl,[this.ntrees,1]); Xu_forest = repmat(Xu,[this.ntrees 1]);
                 Yl_forest = repmat(Yl,[this.ntrees 1]);
                 X_forest = [Xl_forest;Xu_forest]; Y_forest = [Yl_forest;Yu_forest];
@@ -147,7 +156,7 @@ classdef ssforest < handle
                 [Yfl,Pl_forest] = predict(forest,Xl);
                 Yfl = str2num(cell2mat(Yfl));
                 this.acc_l(m+1) = mean(Yl==Yfl);
-                this.Pl(:,:,m+1) = Pl_forest;        %forest probability on labeled data
+                this.Pl{m+1} = Pl_forest;        %forest probability on labeled data
 
                 %% compute predictions (scores or prob) for each out-of-bag datapoint
                 %find indices of out-of-bag labeled data

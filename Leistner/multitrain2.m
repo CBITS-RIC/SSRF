@@ -3,7 +3,7 @@ close all
 clear all
 epochs = 50;
 % tau = [10 20 30 40];
-T0 = 1.25;
+T0 = 1;%1.25;
 % alpha = [0.75 1.25 1.5]; 
 subj = 3;   %total # of train (labeled) subjects to use
 % F = cell(length(tau),1);  %cell array containing all the trained forests
@@ -18,18 +18,18 @@ for Ntr = 1%3
     fprintf('# of Training subjects: %d \n', Ntr);
 
     %loop over model parameters (tau, alpha, etc)
-    for k = 1:1%:length(tau)
+    for k = 1:10%:length(tau)
         k
 %         F = configUCI_fewsamples(Ntr, Nte); %initialize a forest - specify Ntr and Nte subjects
-%         F = configUCI_fewsamples(2, 0);
-        F = configUCI_crosstrial(1);
+        F = configUCI_fewsamples(2, 0);
+%         F = configUCI_crosstrial(1);
         
-        F.tau = 40;%tau(k);          %set tau (80)
+        F.tau = 80;%tau(k);          %set tau (80)
         %     F{k}.alpha = alpha(k);    %set alpha
         F.T0 = T0;%(k);           %set T0
         
         tic 
-        F.trainforest_multic(epochs);    %train ssrf
+        F.trainforest_multic(epochs, true);    %train ssrf
 
         toc
         
@@ -48,7 +48,7 @@ end
 
 toc
 
-save 'accforests.mat' acc;
+% save 'accforests.mat' acc;
 
 %%Plot improvement in accuracy over many sims (k)
 I = [acc(:,1,1) acc(:,end,1)];
