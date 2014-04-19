@@ -61,7 +61,16 @@ classdef ssforest < handle
             %% Train RF on labeled data
             
             fprintf('Train RF (%d trees) on labeled data...\n', this.ntrees);
-            
+            Xl_orig  = Xl;
+            Yl_orig = Yl;
+
+            if repeat,
+                RepFac = ceil(eps+this.T0*length(Yu)/length(Yl_orig));
+                Xl = repmat(Xl_orig, RepFac, 1);
+                Yl = repmat(Yl_orig, RepFac, 1);
+            end
+            fprintf('\n %d initial labeled samples', size(Xl,1));
+
             forest = TreeBagger(this.ntrees,Xl,Yl,'OOBPred','on');
             
             % Computing the forest accuracy on unlabeled data
@@ -96,8 +105,6 @@ classdef ssforest < handle
             this.oobe(1) = nanmean(GE);
             
             %% DA optimization
-            Xl_orig  = Xl;
-            Yl_orig = Yl;
             
             lgs=[];
             for m = 1:epochs,

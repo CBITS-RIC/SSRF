@@ -76,11 +76,6 @@ ind_nosample = inds(~ismember(inds, ind_sample));
 Xu = X(ind_nosample, :);
 Yu = Y(ind_nosample);
 
-% repeating training data to balance the total number of labeled vs
-% unlabeled
-% Xl = repmat(Xl, ceil(eps+RepFac*length(Yu)/length(Yl)), 1);
-% Yl = repmat(Yl, ceil(eps+RepFac*length(Yu)/length(Yl)), 1);
-
 fprintf('%d labeled samples\n', length(ind_sample));   
 fprintf('%d unlabeled samples\n', length(ind_nosample));
 % fprintf('%d labeled samples after balancing\n', length(Yl));

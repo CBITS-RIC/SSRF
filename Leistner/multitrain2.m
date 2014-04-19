@@ -24,7 +24,7 @@ for Ntr = 1%3
         F = configUCI_fewsamples(2, 0);
 %         F = configUCI_crosstrial(1);
         
-        F.tau = 80;%tau(k);          %set tau (80)
+        F.tau = 40;%tau(k);          %set tau (80)
         %     F{k}.alpha = alpha(k);    %set alpha
         F.T0 = T0;%(k);           %set T0
         
@@ -75,8 +75,11 @@ plot(E(:,I<0),'r','LineWidth',2)
 E = [];
 for i=1:k,
     Pu_forest{i}(Pu_forest{i} == 0) = eps
-    Pu_forest{i} = max(Pu_forest{i},[],2);
-    E_ = -mean(sum(Pu_forest{i}.*log2(Pu_forest{i}),2));
+    E_all = -sum(Pu_forest{i}.*log2(Pu_forest{i}),2);
+%     E_all = E_all(:,:);
+    E_ = E_all;
+    E_(E_<=.7) = NaN;
+    E_ = nanmean(E_);
     E = [E E_(:)];
 end
 figure, hold on

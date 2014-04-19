@@ -32,7 +32,7 @@ subjects = load('../Data/UCIHARDataset/train/subject_train.txt');
 subject_codes = unique(subjects);
 
 %choosing the first training subject -- this is an example
-subj = subject_codes(1);
+subj = subject_codes(2);
 ind = find(subjects==subj);
 X = X(ind, :);
 Y = Y(ind, :);
