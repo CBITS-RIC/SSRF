@@ -35,7 +35,7 @@ subject_codes = unique(subjects);
 subj = subject_codes(2);
 ind = find(subjects==subj);
 X = X(ind, :);
-Y = Y(ind, :);
+Y = Y(ind);
 
 classes = unique(Y);         %the class codes
 n_class = length(classes); %the # of classes

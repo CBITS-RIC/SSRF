@@ -21,15 +21,15 @@ for Ntr = 1%3
     for k = 1:10%:length(tau)
         k
 %         F = configUCI_fewsamples(Ntr, Nte); %initialize a forest - specify Ntr and Nte subjects
-        F = configUCI_fewsamples(2, 0);
-%         F = configUCI_crosstrial(1);
+%         F = configUCI_fewsamples(2, 0);
+        F = configUCI_crosstrial(1);
         
         F.tau = 40;%tau(k);          %set tau (80)
         %     F{k}.alpha = alpha(k);    %set alpha
         F.T0 = T0;%(k);           %set T0
         
         tic 
-        F.trainforest_multic(epochs, true);    %train ssrf
+        F.trainforest_multic(epochs, false);    %train ssrf
 
         toc
         

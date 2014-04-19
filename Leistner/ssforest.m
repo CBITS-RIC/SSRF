@@ -68,8 +68,8 @@ classdef ssforest < handle
                 RepFac = ceil(eps+this.T0*length(Yu)/length(Yl_orig));
                 Xl = repmat(Xl_orig, RepFac, 1);
                 Yl = repmat(Yl_orig, RepFac, 1);
+                fprintf('\n %d initial labeled samples', size(Xl,1));
             end
-            fprintf('\n %d initial labeled samples', size(Xl,1));
 
             forest = TreeBagger(this.ntrees,Xl,Yl,'OOBPred','on');
             
@@ -77,7 +77,7 @@ classdef ssforest < handle
             [Yfu,Pu_forest] = predict(forest,Xu);
             Yfu = str2num(cell2mat(Yfu));
             acc(1) = sum(Yu==Yfu)/length(Yu);
-            fprintf(' %f', acc(1));
+            fprintf('\n %f', acc(1));
             this.Pu(:,:,1) = Pu_forest;        %forest probability on unlabeled data
                      
             %compute accuracy on labeled data 
@@ -138,8 +138,8 @@ classdef ssforest < handle
                     RepFac = ceil(eps+T*length(Yu)/length(Yl_orig));
                     Xl = repmat(Xl_orig, RepFac, 1);
                     Yl = repmat(Yl_orig, RepFac, 1);
+                    fprintf('\n %d labeled samples', size(Xl,1));
                 end
-                fprintf('\n %d labeled samples', size(Xl,1));   
                 
                 Xl_forest = repmat(Xl,[this.ntrees,1]); Xu_forest = repmat(Xu,[this.ntrees 1]);
                 Yl_forest = repmat(Yl,[this.ntrees 1]);
@@ -156,7 +156,7 @@ classdef ssforest < handle
                 [Yfu,Pu_forest] = predict(forest,Xu);
                 Yfu = str2num(cell2mat(Yfu));
                 acc(m+1) = sum(Yu==Yfu)/length(Yu);
-                fprintf('\r %f', acc(m+1));    %print accuracy over training
+                fprintf('\n %f', acc(m+1));    %print accuracy over training
                 this.Pu(:,:,m+1) = Pu_forest;        %forest probability on unlabeled data
 
                 %compute accuracy on labeled data
