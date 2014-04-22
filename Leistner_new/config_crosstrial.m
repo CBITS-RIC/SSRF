@@ -1,4 +1,4 @@
-function [Xl Yl Xu Yu] = config_fewsamples(X, Y, subjects, subj, Nsamp, RepFac)
+function [Xl Yl Xu Yu] = config_crosstrial(X, Y, subjects, subj, trial)
 
 subject_codes = unique(subjects);
 
@@ -26,13 +26,9 @@ for i=1:n_class,
     trans_start = trans_end+1;
     trans_start = [ind_class(1), ind_class(trans_start)'];
     trans_end = [ind_class(trans_end)', ind_class(end)];
-    
-    for n = 1:Nsamp
-        for j = 1:length(trans_start),
-            ind_sample = [ind_sample randi([trans_start(j), trans_end(j)],1)];
-        end
-        
-    end
+
+    ind_sample = [ind_sample, trans_start(trial):trans_end(trial)];
+
 end
 
 Xl = X(ind_sample,:);
@@ -44,12 +40,6 @@ ind_nosample = inds(~ismember(inds, ind_sample));
 Xu = X(ind_nosample, :);
 Yu = Y(ind_nosample);
 
-% repeating training data to balance the total number of labeled vs
-% unlabeled
-Xl = repmat(Xl, 1+round(RepFac*length(Yu)/length(Yl)), 1);
-Yl = repmat(Yl, 1+round(RepFac*length(Yu)/length(Yl)), 1);
-
 disp('Labeled/Unlabeled data configured:');
 fprintf('%d labeled samples\n', length(ind_sample));   
 fprintf('%d unlabeled samples\n', length(ind_nosample));
-fprintf('%d labeled samples after balancing\n', length(Yl));
