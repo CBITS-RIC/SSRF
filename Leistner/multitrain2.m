@@ -5,7 +5,7 @@ epochs = 50;
 % tau = [10 20 30 40];
 T0 = 1;%1.25;
 % alpha = [0.75 1.25 1.5]; 
-subj = 3;   %total # of train (labeled) subjects to use
+subj = 1;   %total # of train (labeled) subjects to use
 % F = cell(length(tau),1);  %cell array containing all the trained forests
 acc = zeros(length(T0),epochs+1,subj); %matrix with accuracy over unlabeled data for every subject
 oobe = acc;                            %matrix with oobe for every subject and epoch
@@ -20,16 +20,18 @@ for Ntr = 1%3
     %loop over model parameters (tau, alpha, etc)
     for k = 1:10%:length(tau)
         k
+        clear F
+
 %         F = configUCI_fewsamples(Ntr, Nte); %initialize a forest - specify Ntr and Nte subjects
-%         F = configUCI_fewsamples(2, 0);
-        F = configUCI_crosstrial(1);
+%         F = configUCI_fewsamples(2, 1);
+        F = configUCI_crosstrial(1);          %arg is which trial is used as labeled data
         
         F.tau = 40;%tau(k);          %set tau (80)
         %     F{k}.alpha = alpha(k);    %set alpha
         F.T0 = T0;%(k);           %set T0
         
         tic 
-        F.trainforest_multic(epochs, false);    %train ssrf
+        F.trainforest_multic(epochs, false);    %train ssrf (second arg is for adaptive reduction of repetition)
 
         toc
         
@@ -40,7 +42,7 @@ for Ntr = 1%3
         Pu_forest{k} = F.Pu;    %probability over labeled data
         confmat{k} = F.confmat; %confusion matrix over unlabeled data at the final iteration
 
-        clear F
+%         return
         
     end
     

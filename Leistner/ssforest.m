@@ -71,7 +71,7 @@ classdef ssforest < handle
                 fprintf('\n %d initial labeled samples', size(Xl,1));
             end
 
-            forest = TreeBagger(this.ntrees,Xl,Yl,'OOBPred','on');
+            forest = TreeBagger(this.ntrees,Xl,Yl,'OOBPred','on');%,'NVarToSample',200);
             
             % Computing the forest accuracy on unlabeled data
             [Yfu,Pu_forest] = predict(forest,Xu);
@@ -121,7 +121,7 @@ classdef ssforest < handle
                 
                 %Compute Optimal Distribution over predicted labels
                 Pu_opt = exp(-(this.alpha*lg+T)/T);
-                Pu_opt = max(Pu_opt,eps);       %prevents Nan if Pu_opt is 0
+%                 Pu_opt = max(Pu_opt,eps);       %prevents Nan if Pu_opt is 0
                 Z = sum(Pu_opt,2); Z = repmat(Z,[1 this.n_class]);
                 Pu_opt = Pu_opt./Z; %normalized probabilities
                 
@@ -147,7 +147,7 @@ classdef ssforest < handle
                 
                 %train forest on labeled and unlabeled data
                 %Each tree is grown
-                forest = TreeBagger(this.ntrees,X_forest,Y_forest,'OOBPred','On','FBoot',1/this.ntrees);
+                forest = TreeBagger(this.ntrees,X_forest,Y_forest,'OOBPred','On','FBoot',1/this.ntrees);%,'NVarToSample',200);
                 %     oob_tmp = oobError(forest);
                 %     oob_total(m) = oob_tmp(end);
                 

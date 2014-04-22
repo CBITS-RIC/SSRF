@@ -32,10 +32,15 @@ subjects = load('../Data/UCIHARDataset/train/subject_train.txt');
 subject_codes = unique(subjects);
 
 %choosing the first training subject -- this is an example
-subj = subject_codes(2);
+subj = subject_codes(10);
 ind = find(subjects==subj);
 X = X(ind, :);
 Y = Y(ind);
+
+%remove standing 
+X(Y == 5,:) = [];
+Y(Y == 5) = [];
+Y(Y == 6) = 5;              %fix the class codes to fill the gap left 
 
 classes = unique(Y);         %the class codes
 n_class = length(classes); %the # of classes
