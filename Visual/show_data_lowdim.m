@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-subj = 1:10;
+subj = 1:4;
 plot_transitions = true;
 
 X = load('../Data/UCIHARDataset/train/X_train.txt');
