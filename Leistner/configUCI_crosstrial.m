@@ -10,7 +10,7 @@
 function forest = configUCI_crosstrial(trial)
 
 %parameters
-ntrees = 30;     %forest size
+ntrees = 10;     %forest size
 T0 = 5;          %initial temperature
 alpha = 1;     %coeff to control the weight of the unlabeled part in the loss function
 tau = 60;  %cooling fcn time constant
@@ -38,6 +38,12 @@ subj = subject_codes(3);
 ind = find(subjects==subj);
 X = X(ind, :);
 Y = Y(ind);
+
+%remove standing 
+X(Y == 5,:) = [];
+Y(Y == 5) = [];
+Y(Y == 6) = 5;              %fix the class codes to fill the gap left 
+
 
 classes = unique(Y);         %the class codes
 n_class = length(classes); %the # of classes
