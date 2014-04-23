@@ -6,13 +6,13 @@ n_class = length(classes);
 for i=1:ntrees,
 %     FeaturesToSample(i,:) = randsample(1:size(Xl,2), round(sqrt(size(Xl,2))));
     PointsToSample(i,:) = randsample(1:size(Xl,1), size(Xl,1), true);
-    trees{i} = ClassificationTree.fit(Xl(PointsToSample(i,:),:),Yl(PointsToSample(i,:)), 'NVarToSample', round(sqrt(size(Xl,2))),'Prune','off');
-    [Ytl(i,:), Ptl(i,:,:)] = predict(trees{i}, Xl);
-    [Ytu(i,:), Ptu(i,:,:)] = predict(trees{i}, Xu);
+    trees{i} = ClassificationTree.fit(Xl(PointsToSample(i,:),:),Yl(PointsToSample(i,:)), 'NVarToSample', round(sqrt(size(Xl,2))));
+    [Ytl(i,:), Ptl(i,:,:)] = predict(trees{i}, Xl(:,:));
+    [Ytu(i,:), Ptu(i,:,:)] = predict(trees{i}, Xu(:,:));
 end
 
 [Yfl, Pl] = forest_response(Ytl, Ptl, classes);
-[Yfu, Pu] = forest_response(Ytu, Ptu, classes);
+[Yfu, Pu] = forest_response(Ytu, classes);
 
 fprintf('Initial accuracy on labeled: %f \n', sum(Yfl==Yl)/length(Yl));
 acc = sum(Yfu==Yu)/length(Yu);
@@ -39,18 +39,18 @@ for m = 1:epochs,
     
     %training the new forest on both labeled on unlabeled data
     Xtotal = [Xl; Xu];
-    clear trees FeaturesToSample PointsToSample Ytl Ytu Ptl Ptu;
+    clear trees FeaturesToSample PointsToSample Ytl Ytu;
     for i=1:ntrees,
         Ytotal = [Yl; Yu_est(:,i)];
 %         FeaturesToSample(i,:) = randsample(1:size(Xtotal,2), round(sqrt(size(Xtotal,2))));
         PointsToSample(i,:) = randsample(1:size(Xtotal,1), size(Xtotal,1), true);
-        trees{i} = ClassificationTree.fit(Xtotal(PointsToSample(i,:),:),Ytotal(PointsToSample(i,:)), 'NVarToSample', round(sqrt(size(Xtotal,2))),'Prune','off');
-        [Ytl(i,:), Ptl(i,:,:)] = predict(trees{i}, Xl);
-        [Ytu(i,:), Ptu(i,:,:)] = predict(trees{i}, Xu);
+        trees{i} = ClassificationTree.fit(Xtotal(PointsToSample(i,:),:),Ytotal(PointsToSample(i,:)), 'NVarToSample', round(sqrt(size(Xtotal,2))));
+        Ytl(i,:) = predict(trees{i}, Xl(:,:));
+        Ytu(i,:) = predict(trees{i}, Xu(:,:));
     end
     
-    [Yfl, Pl] = forest_response(Ytl, Ptl, classes);
-    [Yfu, Pu] = forest_response(Ytu, Ptu, classes);
+    [Yfl, Pl] = forest_response(Ytl, classes);
+    [Yfu, Pu] = forest_response(Ytu, classes);
 
 %     fprintf('Accuracy on labeled: %f \n', sum(Yfl==Yl)/length(Yl));
     acc = [acc, sum(Yfu==Yu)/length(Yu)];

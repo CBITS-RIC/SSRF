@@ -8,7 +8,7 @@ Nsamp = 1;  %for few-samples (no. samples per trial)
 RepFac = 1; %for few-samples (1 = equal; 0 = no balance)
 trial = 1;  %for cross-trial (trial no. for labeled)
 
-ntrees = 500;
+ntrees = 10;
 epochs = 20;
 T0 = 1;
 tau = 40;
@@ -25,7 +25,6 @@ for subj_ind = subj,
     fprintf('\n******* Subject %d:\n', subj_ind);
     acc_{subj_ind} = [];
     for k = 1:10,
-        tic;
         fprintf('\n******* Iteration %d:\n', k);
         
         [Xl Yl Xu Yu] = config_fewsamples(X, Y, subjects, subj_ind, Nsamp, RepFac);
@@ -35,7 +34,6 @@ for subj_ind = subj,
         clear trees;
         [trees acc] = ssrf(Xl, Yl, Xu, Yu, ntrees, epochs, T0, tau, alpha);
         acc_{subj_ind} = [acc_{subj_ind}; acc];
-        toc;
     end
 end
 

@@ -7,4 +7,5 @@ Yf = mode(Yt, 1)';
 %     P(:, i) = transpose(sum(Yt==classes(i),1)/size(Yt,1));
 % end
 
-Pf = squeeze(mean(Pt,1));
+Pf = mean(Pt,1);
+Pf = Pf(1,:,:);
