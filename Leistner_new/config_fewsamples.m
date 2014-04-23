@@ -4,7 +4,10 @@ subject_codes = unique(subjects);
 
 %choosing the first training subject -- this is an example
 subj = subject_codes(subj);
-ind = find(subjects==subj);
+ind = [];
+for s=1:length(subj),
+    ind = [ind; find(subjects==subj(s))];
+end
 X = X(ind, :);
 Y = Y(ind);
 
