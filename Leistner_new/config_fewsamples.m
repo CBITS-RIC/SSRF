@@ -12,9 +12,9 @@ X = X(ind, :);
 Y = Y(ind);
 
 %remove standing %%%%%%%%%%%%%%%%%%%%%%%
-% X(Y == 5,:) = [];
-% Y(Y == 5) = [];
-% Y(Y == 6) = 5;              %fix the class codes to fill the gap left
+X(Y == 5,:) = [];
+Y(Y == 5) = [];
+Y(Y == 6) = 5;              %fix the class codes to fill the gap left
 
 classes = unique(Y);         %the class codes
 n_class = length(classes); %the # of classes

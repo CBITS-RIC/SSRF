@@ -6,14 +6,14 @@ simtype = simtypes{1};
 
 %for few-samples and cross-trial (subject no.)
 %each row is for one run, columnns are subjects in a multi-subject run
-subjects = [1:30]';
+subjects = [1:30];
 subj_lab = 1; %for cross-subject (labeled)
 subj_unlab = 2:30;   %for cross-subject (unlabeled)
 nsamp = 1;  %for few-samples (no. samples per trial)
 RepFac = 1; %for few-samples (1 = equal; 0 = no balance)
 trial = 1;  %for cross-trial (trial no. for labeled)
 
-ntrees = 10;
+ntrees = 50;
 epochs = 20;
 T0 = 1;
 tau = 40;
@@ -28,11 +28,11 @@ subjects_all = [subjects_all; load('../Data/UCIHARDataset/test/subject_test.txt'
 
 for i = 1:size(subjects,1),
     subj = subjects(i,:);
-    disp(['******* Subject(s) ', subj]);
+    fprintf('\n******* Experiment %d:\n', i);
     acc_{i} = [];
     for k = 1:10,
         tic;
-        fprintf('\n******* Iteration %d:\n', k);
+        fprintf('\n******* Run #%d\n', k);
 
         switch simtype,
             case 'few',
@@ -54,7 +54,7 @@ end
 %accuracy over runs and subjects
 figure;
 for i=1:size(subjects,1),
-    subplot(size(subjects,1)/5, 5, i);
+%     subplot(size(subjects,1)/5, 5, i);
     bar([acc_{i}(:,1), acc_{i}(:,end)]);
     imp(:,i) = (acc_{i}(:,end) - acc_{i}(:,1))./acc_{i}(:,1);
     ylim([.5 1]);
@@ -67,7 +67,7 @@ saveas(gcf,sprintf('%s_accs_ntrees%d_nsamp%d_nsub%d', simtype, ntrees, nsamp, si
 
 figure;
 for i=1:size(subjects,1),
-    subplot(size(subjects,1)/5, 5, i);
+%     subplot(size(subjects,1)/5, 5, i);
     imp_good = imp(:,i);
     imp_bad = imp(:,i);
     imp_good(imp_good<0) = 0;
@@ -98,7 +98,7 @@ saveas(gcf,sprintf('%s_imp_boxplot_all_ntrees%d_nsamp%d_nsub%d', simtype, ntrees
 %display accuracy at start and end for each subject
 figure;
 for i=1:size(subjects,1),
-    subplot(size(subjects,1)/5, 5, i);
+%     subplot(size(subjects,1)/5, 5, i);
     boxplot([acc_{i}(:,1) acc_{i}(:,end)]);   %accuracy at start and end 
     set(gca,'FontSize',16)
     set(gca, 'xtick', [1 2], 'xticklabel', {'initial','final'});
