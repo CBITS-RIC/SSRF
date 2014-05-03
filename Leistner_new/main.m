@@ -6,14 +6,15 @@ simtype = simtypes{1};
 
 %for few-samples and cross-trial (subject no.)
 %each row is for one run, columnns are subjects in a multi-subject run
-subjects = [1:30]';
+subjects = [1];
 subj_lab = 1; %for cross-subject (labeled)
 subj_unlab = 2:30;   %for cross-subject (unlabeled)
 nsamp = 1;  %for few-samples (no. samples per trial)
-RepFac = 1; %for few-samples (1 = equal; 0 = no balance)
+RepFac = 0; %for few-samples (1 = equal; 0 = no balance)
 trial = 1;  %for cross-trial (trial no. for labeled)
 
-ntrees = 50;
+% nvartosample = 24;
+ntrees = 30;
 epochs = 20;
 T0 = 1;
 tau = 40;
@@ -46,6 +47,7 @@ for i = 1:size(subjects,1),
                        %     [Xl Yl Xu Yu] = config_crosstrial(X, Y, subjects_all, subj, trial);
         clear trees;
         [trees acc] = ssrf(Xl, Yl, Xu, Yu, ntrees, epochs, T0, tau, alpha);
+        %[trees acc] = sss(Xl, Yl, Xu, Yu, ntrees, epochs, T0, tau, alpha, nvartosample);
         acc_{i} = [acc_{i}; acc];
         toc;
     end

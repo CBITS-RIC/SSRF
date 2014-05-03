@@ -5,8 +5,10 @@ n_class = length(classes);
 
 for i=1:ntrees,
 %     FeaturesToSample(i,:) = randsample(1:size(Xl,2), round(sqrt(size(Xl,2))));
-    PointsToSample(i,:) = randsample(1:size(Xl,1), size(Xl,1), true);
+%     PointsToSample(i,:) = randsample(1:size(Xl,1), size(Xl,1), true);
+    PointsToSample(i,:) = 1:size(Xl,1);
     trees{i} = ClassificationTree.fit(Xl(PointsToSample(i,:),:),Yl(PointsToSample(i,:)), 'NVarToSample', round(sqrt(size(Xl,2))),'Prune','off');
+    
     [Ytl(i,:), Ptl(i,:,:)] = predict(trees{i}, Xl);
     [Ytu(i,:), Ptu(i,:,:)] = predict(trees{i}, Xu);
 end
@@ -42,9 +44,11 @@ for m = 1:epochs,
     clear trees FeaturesToSample PointsToSample Ytl Ytu Ptl Ptu;
     for i=1:ntrees,
         Ytotal = [Yl; Yu_est(:,i)];
-%         FeaturesToSample(i,:) = randsample(1:size(Xtotal,2), round(sqrt(size(Xtotal,2))));
+        %         FeaturesToSample(i,:) = randsample(1:size(Xtotal,2), round(sqrt(size(Xtotal,2))));
         PointsToSample(i,:) = randsample(1:size(Xtotal,1), size(Xtotal,1), true);
+        %PointsToSample(i,:) = 1:size(Xtotal,1);
         trees{i} = ClassificationTree.fit(Xtotal(PointsToSample(i,:),:),Ytotal(PointsToSample(i,:)), 'NVarToSample', round(sqrt(size(Xtotal,2))),'Prune','off');
+        
         [Ytl(i,:), Ptl(i,:,:)] = predict(trees{i}, Xl);
         [Ytu(i,:), Ptu(i,:,:)] = predict(trees{i}, Xu);
     end

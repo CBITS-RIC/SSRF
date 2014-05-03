@@ -9,7 +9,7 @@ nsamp = 1;  %for few-samples (no. samples per trial)
 RepFac = 1; %for few-samples (1 = equal; 0 = no balance)
 trial = 1;  %for cross-trial (trial no. for labeled)
 
-ntrees = 500;
+ntrees = 400;
 epochs = 20;
 T0 = 1;
 tau = 40;
@@ -28,7 +28,6 @@ for i = 1:1,%size(subjects,1),
     for k = 1:10,
         tic;
         fprintf('\n******* Iteration %d:\n', k);
-
         switch simtype,
             case 'few',
                 [Xl Yl Xu Yu] = config_fewsamples_fisheriris(X, Y, nsamp, RepFac);
@@ -37,10 +36,9 @@ for i = 1:1,%size(subjects,1),
             otherwise,
                 error('run type unknown!');
         end
-        
-                       %     [Xl Yl Xu Yu] = config_crosstrial(X, Y, subjects_all, subj, trial);
-        clear trees;
-        [trees acc] = ssrf(Xl, Yl, Xu, Yu, ntrees, epochs, T0, tau, alpha);
+%         clear trees;
+%         [trees acc] = ssrf(Xl, Yl, Xu, Yu, ntrees, epochs, T0, tau, alpha);
+        [trees acc] = sss(Xl, Yl, Xu, Yu, ntrees, epochs, T0, tau, alpha);
         acc_{i} = [acc_{i}; acc];
         toc;
     end
@@ -70,7 +68,7 @@ for i=1:1,%size(subjects,1),
     bar(imp_good, 'g');
     hold on;
     bar(imp_bad, 'r');
-    xlim([0 size(acc_{1},1)+1]);
+    xlim([0 size(acc_{1},1)+2]);
     set(gca,'FontSize',14)
     ylim([-0.2 0.2])
 end
